@@ -1,31 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>The Maze Behind the Loading Bar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maze Loading Bar</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fdfdfd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .maze-container {
+      width: 90%;
+      max-width: 700px;
+      border: 2px solid #ccc;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
-  <!-- LOGIN -->
-  <div id="loginPage">
-    <h1>Welcome to the Maze</h1>
-    <input type="text" id="username" placeholder="Enter your name">
-    <button onclick="startLoading()">Enter</button>
-  </div>
+  <div class="maze-container">
+    <!-- Maze SVG -->
+    <svg viewBox="0 0 600 240" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .maze-path {
+          fill: none;
+          stroke: #000;
+          stroke-width: 8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
 
-  <!-- LOADING + MAZE -->
-  <div id="loadingPage" style="display:none;">
-    <h2>Loading...</h2>
-    <div id="mazeWrapper">
-      <div id="progressFill"></div>
-      <div id="mazeGrid"></div>
-      <div id="loadingBar" draggable="true"></div>
-    </div>
-    <div id="popupMessage"></div>
-    <div id="gameArea"></div>
-  </div>
+        .trigger {
+          fill: hotpink;
+          stroke: black;
+          stroke-width: 2;
+          cursor: pointer;
+        }
+      </style>
 
-  <script src="script.js"></script>
+      <path class="maze-path"
+        d="M20 20 
+           H580 
+           V60 
+           H60 
+           V100 
+           H540 
+           V140 
+           H100 
+           V180 
+           H500 
+           V220 
+           H20" />
+
+      <circle class="trigger" cx="580" cy="20" r="10" />
+      <circle class="trigger" cx="60" cy="60" r="10" />
+      <circle class="trigger" cx="540" cy="100" r="10" />
+      <circle class="trigger" cx="100" cy="140" r="10" />
+      <circle class="trigger" cx="500" cy="180" r="10" />
+      <circle class="trigger" cx="20" cy="220" r="10" />
+    </svg>
+  </div>
 </body>
 </html>
