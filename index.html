@@ -2,70 +2,73 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Maze Loading Bar</title>
-  <style>
-    body {
-      margin: 0;
-      background: #fdfdfd;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .maze-container {
-      width: 90%;
-      max-width: 700px;
-      border: 2px solid #ccc;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meme Maze Loader</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div class="maze-container">
-    <!-- Maze SVG -->
-    <svg viewBox="0 0 600 240" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
-      <style>
-        .maze-path {
-          fill: none;
-          stroke: #000;
-          stroke-width: 8;
-          stroke-linecap: round;
-          stroke-linejoin: round;
-        }
 
-        .trigger {
-          fill: hotpink;
-          stroke: black;
-          stroke-width: 2;
-          cursor: pointer;
-        }
-      </style>
+  <!-- 1) Welcome Screen -->
+  <div class="screen welcome-screen">
+    <h1>Welcome to the Maze of Emotional Chaos</h1>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button id="start-btn">Enter</button>
+  </div>
 
+  <!-- 2) Loading Screen -->
+  <div class="screen loading-screen hidden" id="loading-screen">
+    <div class="loading-bar">
+      <div class="progress"></div>
+    </div>
+    <p class="loading-text">Loading your destiny...</p>
+  </div>
+
+  <!-- 2a) Stuck Modal -->
+  <div id="stuckModal" class="modal hidden">
+    <div class="modal-content">
+      <p id="stuckText">Is your loading bar stuck? Wanna see what happened?</p>
+      <button id="stuckBtn">Show me</button>
+    </div>
+  </div>
+
+  <!-- 2b) Hint Modal -->
+  <div id="hintModal" class="modal hidden">
+    <div class="modal-content">
+      <p>Hint: something is going on behind.</p>
+      <button id="hintBtn">OK</button>
+    </div>
+  </div>
+
+  <!-- 3) Maze Screen -->
+  <div class="screen maze-container hidden">
+    <svg viewBox="0 0 600 240" width="100%" height="auto"
+         xmlns="http://www.w3.org/2000/svg">
       <path class="maze-path"
-        d="M20 20 
-           H580 
-           V60 
-           H60 
-           V100 
-           H540 
-           V140 
-           H100 
-           V180 
-           H500 
-           V220 
-           H20" />
-
-      <circle class="trigger" cx="580" cy="20" r="10" />
-      <circle class="trigger" cx="60" cy="60" r="10" />
-      <circle class="trigger" cx="540" cy="100" r="10" />
-      <circle class="trigger" cx="100" cy="140" r="10" />
-      <circle class="trigger" cx="500" cy="180" r="10" />
-      <circle class="trigger" cx="20" cy="220" r="10" />
+        d="M20 20 H580 V60 H60 V100 H540 V140 H100 V180 H500 V220 H20"/>
+      <circle class="trigger" cx="580" cy="20" r="10"/>
+      <circle class="trigger" cx="60" cy="60" r="10"/>
+      <circle class="trigger" cx="540" cy="100" r="10"/>
+      <circle class="trigger" cx="100" cy="140" r="10"/>
+      <circle class="trigger" cx="500" cy="180" r="10"/>
+      <circle class="trigger" cx="20" cy="220" r="10"/>
     </svg>
   </div>
+
+  <!-- 4) Mini-Game Modal -->
+  <div id="gameModal" class="modal hidden">
+    <div class="modal-content">
+      <p id="gameText"></p>
+      <button id="gameBtn">Complete</button>
+    </div>
+  </div>
+
+  <!-- 5) Victory Screen -->
+  <div class="screen victory-screen hidden">
+    <h1 id="victory-message"></h1>
+    <p>Now go touch grass 🌱</p>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

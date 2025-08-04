@@ -1,219 +1,121 @@
-// --- ELEMENTS ---
-const loginPage    = document.getElementById("loginPage");
-const loadingPage  = document.getElementById("loadingPage");
-const progressFill = document.getElementById("progressFill");
-const mazeGrid     = document.getElementById("mazeGrid");
-const loadingBar   = document.getElementById("loadingBar");
-const popupMessage = document.getElementById("popupMessage");
-const gameArea     = document.getElementById("gameArea");
+console.log('🔌 script.js loaded');
 
-// --- STATE ---
-let userName       = "";
-let popupShown     = false;
-let mazeRevealed   = false;
-let popupClickTime = 0;
-let mazeIndex      = 0;
+const startBtn       = document.getElementById('start-btn');
+const usernameInput  = document.getElementById('username');
+const welcomeScreen  = document.querySelector('.welcome-screen');
+const loadingScreen  = document.getElementById('loading-screen');
+const stuckModal     = document.getElementById('stuckModal');
+const stuckBtn       = document.getElementById('stuckBtn');
+const stuckText      = document.getElementById('stuckText');
+const hintModal      = document.getElementById('hintModal');
+const hintBtn        = document.getElementById('hintBtn');
+const mazeContainer  = document.querySelector('.maze-container');
+const gameModal      = document.getElementById('gameModal');
+const gameText       = document.getElementById('gameText');
+const gameBtn        = document.getElementById('gameBtn');
+const victoryScreen  = document.querySelector('.victory-screen');
+const victoryMessage = document.getElementById('victory-message');
+const progress       = document.querySelector('.progress');
+const triggers       = Array.from(document.querySelectorAll('.trigger'));
 
-// corners at 100px grid blocks
-const mazeCheckpoints = [
-  { top:   0, left: 100 },
-  { top: 100, left: 100 },
-  { top: 100, left: 200 },
-  { top: 200, left: 200 },
-  { top: 200, left: 300 },
-  { top: 300, left: 300 }
-];
+let username   = '';
+let stuckStep  = 0;
+let showTime   = 0;
 
-// --- HELPERS ---
-function showPopup(text) {
-  popupMessage.innerText = text;
-  popupMessage.style.display = "block";
-}
+// 1) Start button
+startBtn.addEventListener('click', () => {
+  console.log('▶️ Enter clicked');
+  username = usernameInput.value.trim() || 'Traveler';
+  welcomeScreen.classList.add('hidden');
+  loadingScreen.classList.remove('hidden');
+  startLoading();
+});
 
-// --- LOGIN → LOADING ---
+// 2) Fake load to 27% then pause
 function startLoading() {
-  userName = document.getElementById("username").value.trim();
-  if (!userName) return alert("Enter your name!");
-
-  loginPage.style.display   = "none";
-  loadingPage.style.display = "block";
-  animateLoadingBar();
-}
-
-// Phase 1: fill to 30%, then pop-ups
-function animateLoadingBar() {
-  let progress = 0;
-  const maxProgress  = 30;
-  const pxPerPercent = 600 / 100;
-
+  let load = 0;
   const interval = setInterval(() => {
-    if (progress < maxProgress) {
-      progress += 2;
-      progressFill.style.width = (progress * pxPerPercent) + "px";
-    } else {
+    load++;
+    progress.style.width = `${load}%`;
+    if (load >= 27) {
       clearInterval(interval);
-      popupClickTime = Date.now();
-
-      // after  5s → why stuck?
-      setTimeout(() => {
-        if (!popupShown) {
-          showPopup("😐 Hey, wanna know why you're stuck? Click me.");
-          popupShown = true;
-        }
-      }, 5000);
-
-      // after 10s → hint
-      setTimeout(() => {
-        if (!mazeRevealed) showPopup("🤫 Hint: Something’s happening behind you...");
-      }, 10000);
-
-      // after 15s → foolish
-      setTimeout(() => {
-        if (!mazeRevealed) showPopup("😵‍💫 Veeru, this fool is an imbecile. Just drag the bar.");
-      }, 15000);
+      showStuckModal();
     }
-  }, 300);
+  }, 30);
 }
 
-// handle popup clicks
-popupMessage.addEventListener("click", () => {
-  const dt = Date.now() - popupClickTime;
-  showPopup(dt < 2000 ? "😏 Whoa, eager much?" : "😂 Psych. Got you.");
-  popupMessage.style.cursor = "default";
-});
-
-// reveal maze on first drag
-loadingBar.addEventListener("dragstart", () => {
-  if (!mazeRevealed) {
-    mazeGrid.style.display = "block";
-    mazeRevealed = true;
-    showPopup("🧩 Maze revealed! Let’s go...");
-    setTimeout(moveThroughMaze, 1000);
-  }
-});
-
-// Phase 2: navigate grid corners + trigger dummy games
-function moveThroughMaze() {
-  if (mazeIndex >= mazeCheckpoints.length) {
-    showPopup(`🎉 Congrats, ${userName}! You’ve finished.`);
-    gameArea.innerHTML = `
-      <h2>🎊 Well done, ${userName}!</h2>
-      <p>You may now go back.</p>
-      <button onclick="location.reload()">Restart</button>
-    `;
-    return;
-  }
-
-  const pt = mazeCheckpoints[mazeIndex];
-  loadingBar.style.top  = pt.top  + "px";
-  loadingBar.style.left = pt.left + "px";
-  progressFill.style.width = pt.left + "px";  // keep fill behind
-
-  showPopup(`Checkpoint ${mazeIndex+1}: Solve to continue`);
-  gameArea.innerHTML = "";
-
-  // Example mini-games:
-  if (mazeIndex === 0) emojiMatchGame();
-  else if (mazeIndex === 1) mathPuzzleGame();
-  else if (mazeIndex === 2) colorMatchGame();
-  else if (mazeIndex === 3) typingChallenge();
-  else if (mazeIndex === 4) memoryFlipGame();
-  else ticTacToeGame();
-
-  mazeIndex++;
+// 2a) Stuck modal
+function showStuckModal() {
+  stuckModal.classList.remove('hidden');
+  showTime = Date.now();
 }
 
-// --- MINI-GAMES ---
-function emojiMatchGame() {
-  gameArea.innerHTML = `
-    <p>Match the emoji: 🐶</p>
-    <button onclick="checkEmoji('🐱')">🐱</button>
-    <button onclick="checkEmoji('🐶')">🐶</button>
-    <button onclick="checkEmoji('🐭')">🐭</button>
-  `;
-}
-function checkEmoji(ch) {
-  if (ch==='🐶') nextGame(); else showPopup("❌ Try again!");
-}
-
-function mathPuzzleGame() {
-  gameArea.innerHTML = `
-    <p>7 + 5 = ?</p>
-    <input type="number" id="mathAnswer">
-    <button onclick="checkMath()">Submit</button>
-  `;
-}
-function checkMath() {
-  if (+document.getElementById("mathAnswer").value===12) nextGame();
-  else showPopup("❌ Try again!");
-}
-
-function colorMatchGame() {
-  gameArea.innerHTML = `
-    <p>Click the color matching <span style="color:red;">Red</span></p>
-    <button onclick="checkColor('blue')" style="background:blue;"></button>
-    <button onclick="checkColor('red')"  style="background:red;"></button>
-    <button onclick="checkColor('green')"style="background:green;"></button>
-  `;
-}
-function checkColor(c) {
-  if (c==='red') nextGame(); else showPopup("❌ Try again!");
-}
-
-function typingChallenge() {
-  gameArea.innerHTML = `
-    <p>Type the word: <strong>maze</strong></p>
-    <input id="typeInput"><button onclick="checkTyping()">Go</button>
-  `;
-}
-function checkTyping() {
-  if (document.getElementById("typeInput").value.toLowerCase()==="maze")
-    nextGame();
-  else showPopup("❌ Try again!");
-}
-
-let firstPick = null;
-function memoryFlipGame() {
-  gameArea.innerHTML = `
-    <p>Find the matching pair</p>
-    <button onclick="checkMemory('A')">🧠</button>
-    <button onclick="checkMemory('B')">🍎</button>
-    <button onclick="checkMemory('A')">🧠</button>
-  `;
-}
-function checkMemory(val) {
-  if (!firstPick) {
-    firstPick = val;
-    showPopup("Pick one more...");
+stuckBtn.addEventListener('click', () => {
+  if (stuckStep === 0) {
+    const delta = Date.now() - showTime;
+    stuckText.textContent = delta < 500
+      ? "You're too impatient!"
+      : "Psych! Got you!";
+    stuckBtn.textContent = "OK";
+    stuckStep = 1;
   } else {
-    if (firstPick===val) nextGame();
-    else { showPopup("❌ Nope"); firstPick=null; }
+    stuckModal.classList.add('hidden');
+    setTimeout(() => hintModal.classList.remove('hidden'), 5000);
   }
+});
+
+// 2b) Hint modal
+hintBtn.addEventListener('click', () => {
+  hintModal.classList.add('hidden');
+  loadingScreen.addEventListener('click', revealMaze, { once: true });
+});
+
+// 3) Reveal maze
+function revealMaze() {
+  loadingScreen.classList.add('hidden');
+  mazeContainer.classList.remove('hidden');
+  initMazeGames();
 }
 
-function ticTacToeGame() {
-  gameArea.innerHTML = `
-    <p>Click center to win!</p>
-    <div style="display:grid;grid-template:repeat(3,50px)/repeat(3,50px);gap:5px;">
-      <button onclick="checkTic(false)">⬜</button>
-      <button onclick="checkTic(true)">✅</button>
-      <button onclick="checkTic(false)">⬜</button>
-      <button onclick="checkTic(false)">⬜</button>
-      <button onclick="checkTic(false)">⬜</button>
-      <button onclick="checkTic(false)">⬜</button>
-      <button onclick="checkTic(false)">⬜</button>
-      <button onclick="checkTic(false)">⬜</button>
-      <button onclick="checkTic(false)">⬜</button>
-    </div>
-  `;
-}
-function checkTic(win) {
-  if (win) nextGame();
-  else showPopup("❌ Try again!");
-}
+// 4) Mini-games
+function initMazeGames() {
+  const increments = (100 - 27) / triggers.length;
+  let current = 0;
+  const messages = [
+    "Mini-game 1: Click the invisible button.",
+    "Mini-game 2: Solve the riddle of the cursed emoji 🤔.",
+    "Mini-game 3: Drag the chaos into order.",
+    "Mini-game 4: Decode the meme matrix.",
+    "Mini-game 5: Escape the pop-up prison.",
+    "Mini-game 6: Accept your fate."
+  ];
 
-// proceed to next
-function nextGame() {
-  showPopup("✅ Correct!");
-  setTimeout(moveThroughMaze, 1000);
+  // only first trigger active
+  triggers.forEach((t, i) => t.style.pointerEvents = i === 0 ? 'all' : 'none');
+
+  triggers.forEach((trigger, i) => {
+    trigger.addEventListener('click', () => {
+      if (i !== current) return;
+      gameText.textContent = messages[i];
+      gameModal.classList.remove('hidden');
+    });
+  });
+
+  gameBtn.addEventListener('click', () => {
+    gameModal.classList.add('hidden');
+    current++;
+    const newWidth = 27 + increments * current;
+    progress.style.width = `${newWidth}%`;
+
+    if (current >= triggers.length) {
+      mazeContainer.classList.add('hidden');
+      victoryMessage.textContent = 
+        `Congrats, ${username}. You survived the maze.`;
+      victoryScreen.classList.remove('hidden');
+    } else {
+      triggers.forEach((t, i) => 
+        t.style.pointerEvents = i === current ? 'all' : 'none'
+      );
+    }
+  });
 }
