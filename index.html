@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Maze Behind the Loading Bar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- LOGIN -->
+  <div id="loginPage">
+    <h1>Welcome to the Maze</h1>
+    <input type="text" id="username" placeholder="Enter your name">
+    <button onclick="startLoading()">Enter</button>
+  </div>
+
+  <!-- LOADING + MAZE -->
+  <div id="loadingPage" style="display:none;">
+    <h2>Loading...</h2>
+    <div id="mazeWrapper">
+      <div id="progressFill"></div>
+      <div id="mazeGrid"></div>
+      <div id="loadingBar" draggable="true"></div>
+    </div>
+    <div id="popupMessage"></div>
+    <div id="gameArea"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
