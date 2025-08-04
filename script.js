@@ -73,7 +73,7 @@ hintBtn.addEventListener('click', () => {
 function revealMaze() {
   loadingScreen.classList.add('hidden');
   mazeContainer.classList.remove('hidden');
-  initGames();
+  initGames(); //try
 }
 
 // 4) Games
